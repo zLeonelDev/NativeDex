@@ -1,0 +1,60 @@
+cmake_minimum_required(VERSION 3.20)
+project(NativeDex LANGUAGES CXX)
+
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+if(MSVC)
+    add_compile_options(/W4 /permissive- /Zc:__cplusplus /Zc:inline /Zc:throwingNew)
+    # Replace /Zi and /ZI with /Z7 to embed debug info in .obj instead of .pdb, avoiding C1041 errors
+    string(REPLACE "/Zi" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    string(REPLACE "/ZI" "/Z7" CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG}")
+    string(REPLACE "/Zi" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+    string(REPLACE "/ZI" "/Z7" CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG}")
+else()
+    add_compile_options(-Wall -Wextra -Wpedantic -Werror)
+endif()
+
+option(BUILD_TESTS "Build tests" ON)
+option(BUILD_TOOLS "Build tools (inspector, tracer)" ON)
+
+add_subdirectory(runtime/dex_loader)
+add_subdirectory(runtime/class_loader)
+add_subdirectory(runtime/bytecode_interpreter)
+add_subdirectory(runtime/method_resolver)
+add_subdirectory(runtime/api_registry)
+add_subdirectory(runtime/module_manager)
+add_subdirectory(runtime/cache_manager)
+add_subdirectory(runtime/logger)
+add_subdirectory(runtime/thread_manager)
+add_subdirectory(runtime/object_model)
+add_subdirectory(runtime/heap)
+add_subdirectory(runtime/gc)
+
+add_subdirectory(android/java.lang)
+add_subdirectory(android/java.util)
+add_subdirectory(android/java.io)
+add_subdirectory(android/android.os)
+add_subdirectory(android/android.app)
+add_subdirectory(android/android.content)
+add_subdirectory(android/android.view)
+add_subdirectory(android/android.widget)
+add_subdirectory(android/android.graphics)
+
+add_subdirectory(platform/windows)
+add_subdirectory(platform/linux)
+add_subdirectory(platform/macos)
+
+if(BUILD_TOOLS)
+    add_subdirectory(tools/inspector)
+    add_subdirectory(tools/tracer)
+endif()
+
+add_subdirectory(launcher)
+
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
+
+add_subdirectory(third_party/miniz)

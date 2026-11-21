@@ -1,0 +1,12 @@
+tmp/*
+build/*
+build
+tmp
+build.log
+logs/*
+logs
+data/
+*.o
+*.obj
+*.exe
+*.pdb
